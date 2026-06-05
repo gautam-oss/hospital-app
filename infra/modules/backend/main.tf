@@ -4,11 +4,15 @@ resource "aws_launch_template" "backend" {
   instance_type = var.instance_type
 
   network_interfaces {
-    associate_public_ip_address = false
+    associate_public_ip_address = var.public_ip
     security_groups             = [var.backend_sg_id]
   }
 
-  user_data = base64encode("#!/bin/bash\nyum update -y\n# install your app runtime here")
+  user_data = base64encode(templatefile("${path.module}/userdata.sh", {
+    db_url     = var.database_url
+    secret_key = var.secret_key
+    repo_url   = var.repo_url
+  }))
 }
 
 resource "aws_autoscaling_group" "backend" {
@@ -16,7 +20,7 @@ resource "aws_autoscaling_group" "backend" {
   desired_capacity    = var.asg_desired
   min_size            = var.asg_min
   max_size            = var.asg_max
-  vpc_zone_identifier = var.private_subnet_ids
+  vpc_zone_identifier = var.subnet_ids
   health_check_type   = "EC2"
 
   launch_template {

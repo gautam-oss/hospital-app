@@ -13,8 +13,12 @@ variable "instance_type" {
 variable "backend_sg_id" {
   type = string
 }
-variable "private_subnet_ids" {
+variable "subnet_ids" {
   type = list(string)
+}
+variable "public_ip" {
+  type    = bool
+  default = false
 }
 variable "asg_desired" {
   type    = number
@@ -27,4 +31,16 @@ variable "asg_min" {
 variable "asg_max" {
   type    = number
   default = 3
+}
+variable "database_url" {
+  type      = string
+  sensitive = true
+}
+variable "secret_key" {
+  type      = string
+  sensitive = true
+}
+variable "repo_url" {
+  type    = string
+  default = "https://github.com/gautam-oss/hospital-app.git"
 }
