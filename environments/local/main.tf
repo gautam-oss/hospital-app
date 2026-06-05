@@ -38,3 +38,11 @@ module "frontend" {
   env        = "local"
   enable_cdn = false
 }
+
+module "secrets" {
+  source      = "../../modules/secrets"
+  project     = var.project
+  env         = "local"
+  db_password = var.db_password
+  jwt_secret  = var.jwt_secret
+}

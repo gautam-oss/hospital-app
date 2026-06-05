@@ -14,3 +14,9 @@ variable "db_password" {
   type    = string
   default = "localtest123"
 }
+
+variable "jwt_secret" {
+  type      = string
+  sensitive = true
+  default   = "local-jwt-secret-changeme"
+}

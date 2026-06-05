@@ -55,3 +55,11 @@ module "database" {
   db_username        = var.db_username
   db_password        = var.db_password
 }
+
+module "secrets" {
+  source      = "../../modules/secrets"
+  project     = var.project
+  env         = "dev"
+  db_password = var.db_password
+  jwt_secret  = var.jwt_secret
+}
