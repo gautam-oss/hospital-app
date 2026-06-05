@@ -2,19 +2,12 @@ terraform {
   required_providers {
     aws = { source = "hashicorp/aws", version = "~> 5.0" }
   }
-  backend "s3" {
-    bucket         = "tf-state-prod-208179291544"
-    key            = "prod/terraform.tfstate"
-    region         = "ap-south-1"
-    dynamodb_table = "tf-locks-prod"
-    encrypt        = true
-    profile        = "prod"
-  }
 }
-provider "aws" {
-  region  = "ap-south-1"
 
+provider "aws" {
+  region = "ap-south-1"
 }
+
 module "networking" {
   source               = "../../modules/networking"
   project              = var.project
@@ -25,12 +18,14 @@ module "networking" {
   availability_zones   = ["ap-south-1a", "ap-south-1b"]
   app_port             = 8080
 }
+
 module "frontend" {
   source     = "../../modules/frontend"
   project    = var.project
   env        = "prod"
   enable_cdn = true
 }
+
 module "loadbalancer" {
   source            = "../../modules/loadbalancer"
   project           = var.project
@@ -40,6 +35,7 @@ module "loadbalancer" {
   vpc_id            = module.networking.vpc_id
   app_port          = 8080
 }
+
 module "backend" {
   source             = "../../modules/backend"
   project            = var.project
@@ -52,6 +48,7 @@ module "backend" {
   asg_min            = 2
   asg_max            = 10
 }
+
 module "database" {
   source             = "../../modules/database"
   project            = var.project
@@ -63,4 +60,12 @@ module "database" {
   db_name            = var.db_name
   db_username        = var.db_username
   db_password        = var.db_password
+}
+
+module "secrets" {
+  source      = "../../modules/secrets"
+  project     = var.project
+  env         = "prod"
+  db_password = var.db_password
+  jwt_secret  = var.jwt_secret
 }
