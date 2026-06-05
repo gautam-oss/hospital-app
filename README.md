@@ -1,7 +1,7 @@
-# saas-infra
-WSL2 + LocalStack + Terraform | ap-south-1 | Account: 208179291544
-- local → LocalStack (tflocal)
-- dev   → gautam-dev (terraform)
-- prod  → gautam-prod (terraform, only at launch)
-# trigger CI
 # Hospital Appointment System
+Full-stack SaaS · FastAPI + React + PostgreSQL · AWS ap-south-1
+
+## Structure
+- `infra/`    → Terraform infrastructure
+- `backend/`  → FastAPI Python app
+- `frontend/` → React app
