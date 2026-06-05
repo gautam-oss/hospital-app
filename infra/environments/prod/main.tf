@@ -8,12 +8,10 @@ terraform {
     region         = "ap-south-1"
     dynamodb_table = "tf-locks-prod"
     encrypt        = true
-    profile        = "prod"
   }
 }
 provider "aws" {
   region  = "ap-south-1"
-  profile = "prod"
 }
 module "networking" {
   source               = "../../modules/networking"
@@ -63,4 +61,10 @@ module "database" {
   db_name            = var.db_name
   db_username        = var.db_username
   db_password        = var.db_password
+}
+
+module "monitoring" {
+  source  = "../../modules/monitoring"
+  project = var.project
+  env     = "prod"
 }
