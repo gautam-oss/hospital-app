@@ -16,7 +16,7 @@ resource "aws_autoscaling_group" "backend" {
   desired_capacity    = var.asg_desired
   min_size            = var.asg_min
   max_size            = var.asg_max
-  vpc_zone_identifier = var.private_subnet_ids
+  vpc_zone_identifier = var.subnet_ids
   health_check_type   = "EC2"
 
   launch_template {
