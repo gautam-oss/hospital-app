@@ -8,12 +8,10 @@ terraform {
     region         = "ap-south-1"
     dynamodb_table = "tf-locks-prod"
     encrypt        = true
-    profile        = "prod"
   }
 }
 provider "aws" {
   region  = "ap-south-1"
-  profile = "prod"
 }
 module "networking" {
   source               = "../../modules/networking"
