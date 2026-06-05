@@ -10,9 +10,11 @@ terraform {
     encrypt        = true
   }
 }
+
 provider "aws" {
-  region  = "ap-south-1"
+  region = "ap-south-1"
 }
+
 module "networking" {
   source               = "../../modules/networking"
   project              = var.project
@@ -23,12 +25,14 @@ module "networking" {
   availability_zones   = ["ap-south-1a", "ap-south-1b"]
   app_port             = 8080
 }
+
 module "frontend" {
   source     = "../../modules/frontend"
   project    = var.project
   env        = "prod"
   enable_cdn = true
 }
+
 module "loadbalancer" {
   source            = "../../modules/loadbalancer"
   project           = var.project
@@ -38,18 +42,7 @@ module "loadbalancer" {
   vpc_id            = module.networking.vpc_id
   app_port          = 8080
 }
-module "backend" {
-  source             = "../../modules/backend"
-  project            = var.project
-  env                = "prod"
-  ami_id             = var.ami_id
-  instance_type      = "t3.medium"
-  backend_sg_id      = module.networking.backend_sg_id
-  private_subnet_ids = module.networking.private_subnet_ids
-  asg_desired        = 2
-  asg_min            = 2
-  asg_max            = 10
-}
+
 module "database" {
   source             = "../../modules/database"
   project            = var.project
@@ -61,4 +54,35 @@ module "database" {
   db_name            = var.db_name
   db_username        = var.db_username
   db_password        = var.db_password
+}
+
+module "backend" {
+  source        = "../../modules/backend"
+  project       = var.project
+  env           = "prod"
+  ami_id        = var.ami_id
+  instance_type = "t3.medium"
+  backend_sg_id = module.networking.backend_sg_id
+  subnet_ids    = module.networking.private_subnet_ids
+  public_ip     = false
+  asg_desired   = 2
+  asg_min       = 2
+  asg_max       = 10
+  database_url  = "postgresql://${var.db_username}:${var.db_password}@${module.database.db_endpoint}/${var.db_name}"
+  secret_key    = var.jwt_secret
+  repo_url      = "https://github.com/gautam-oss/hospital-app.git"
+}
+
+module "monitoring" {
+  source  = "../../modules/monitoring"
+  project = var.project
+  env     = "prod"
+}
+
+module "secrets" {
+  source      = "../../modules/secrets"
+  project     = var.project
+  env         = "prod"
+  db_password = var.db_password
+  jwt_secret  = var.jwt_secret
 }
